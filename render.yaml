@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: subtitle-translator-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+      - key: DEEPSEEK_API_KEY
+        sync: false
