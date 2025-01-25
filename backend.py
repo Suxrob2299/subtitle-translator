@@ -7,16 +7,21 @@ from pathlib import Path
 import tempfile
 import os
 from dotenv import load_dotenv
+import logging
+
+# Logging sozlamalari
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
 
-app = FastAPI()
+app = FastAPI(title="Subtitle Translator API")
 
-# CORS sozlamalari
+# CORS sozlamalari - deployment uchun
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],  # Production uchun aniq domain ko'rsatiladi
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -24,6 +29,9 @@ app.add_middleware(
 
 # DeepSeek AI configuration
 openai.api_key = os.getenv("DEEPSEEK_API_KEY")
+if not openai.api_key:
+    raise ValueError("DEEPSEEK_API_KEY topilmadi")
+    
 openai.api_base = "https://api.deepseek.com"
 
 def translate_text(text: str, target_lang: str) -> str:
@@ -41,7 +49,13 @@ def translate_text(text: str, target_lang: str) -> str:
         
         return response.choices[0].message.content.strip()
     except Exception as e:
+        logger.error(f"Translation error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Translation error: {str(e)}")
+
+@app.get("/")
+async def read_root():
+    """Health check uchun endpoint"""
+    return {"status": "healthy", "message": "Subtitle Translator API is running"}
 
 @app.post("/translate")
 async def translate_subtitle(
@@ -49,6 +63,8 @@ async def translate_subtitle(
     target_lang: str = "uzbek"
 ):
     try:
+        logger.info(f"Translating file: {file.filename} to {target_lang}")
+        
         # Vaqtinchalik fayl yaratish
         temp_dir = tempfile.mkdtemp()
         input_path = Path(temp_dir) / file.filename
@@ -82,6 +98,7 @@ async def translate_subtitle(
         )
         
     except Exception as e:
+        logger.error(f"Error processing file: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
     
     finally:
@@ -94,4 +111,5 @@ async def translate_subtitle(
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.getenv("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
