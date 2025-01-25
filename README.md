@@ -1,31 +1,60 @@
 # Subtitle Translator
 
-Bu dastur .srt formatidagi subtitr fayllarini tarjima qilish uchun mo'ljallangan.
+Online platforma subtitrllarni bir tildan boshqa tilga tarjima qilish uchun. DeepSeek AI yordamida aniq va sifatli tarjima.
 
-## Imkoniyatlari
+## Xususiyatlar
 
-- .srt fayllarini o'qish
-- Google Translate API orqali subtitrlarni tarjima qilish
-- Tarjima qilingan subtitrlarni yangi faylga saqlash
-- Qulay grafik interfeys
-- Ko'p tillarni qo'llab-quvvatlash
+- .srt formatidagi subtitrl fayllarini yuklash
+- O'zbek, rus va ingliz tillariga tarjima
+- Zamonaviy va qulay interfeys
+- Tez va sifatli tarjima
+
+## Texnologiyalar
+
+- Frontend: Next.js, Shadcn UI, TailwindCSS
+- Backend: FastAPI, DeepSeek AI
+- Deploy: Vercel (frontend) va Railway.app (backend)
 
 ## O'rnatish
 
-1. Python 3.6 yoki undan yuqori versiyasini o'rnating
-2. Kerakli kutubxonalarni o'rnating:
+### Backend
+
 ```bash
+# Virtual muhit yaratish
+python -m venv env
+source env/bin/activate  # Linux/Mac
+env\Scripts\activate  # Windows
+
+# Kerakli kutubxonalarni o'rnatish
 pip install -r requirements.txt
+
+# .env faylini yaratish
+cp .env.example .env
+# .env faylida DEEPSEEK_API_KEY ni sozlang
+
+# Serverni ishga tushirish
+python backend.py
+```
+
+### Frontend
+
+```bash
+# Kerakli paketlarni o'rnatish
+cd frontend
+npm install
+
+# Development serverni ishga tushirish
+npm run dev
 ```
 
 ## Ishlatish
 
-1. Dasturni ishga tushiring:
-```bash
-python subtitle_translator.py
-```
-
-2. "Fayl tanlash" tugmasini bosib .srt faylni tanlang
+1. Brauzerda http://localhost:3000 sahifasini oching
+2. .srt formatidagi subtitrl faylini yuklang
 3. Tarjima tilini tanlang
 4. "Tarjima qilish" tugmasini bosing
-5. Tarjima qilingan fayl original fayl joylashgan papkada yaratiladi
+5. Tarjima qilingan fayl avtomatik yuklab olinadi
+
+## Litsenziya
+
+MIT
